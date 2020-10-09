@@ -1,1 +1,1 @@
-# dot-blog-service
+# dot-blog
