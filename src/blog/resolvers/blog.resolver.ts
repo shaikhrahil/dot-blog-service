@@ -1,6 +1,7 @@
 import {UseGuards} from '@nestjs/common';
 import {Args, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {GqlAuthGuard} from 'src/auth/jwt.strategy';
+import {CurrentUser} from 'src/decorators/current-user.decorator';
 import {AppResponse} from '../dtos/app-response.dto';
 import {AddBlog, BlogDTO, UpdateBlog} from '../dtos/blog.dto';
 import {BlogService} from '../services/blog/blog.service';
@@ -27,15 +28,14 @@ export class BlogResolver {
 
   @Mutation(() => BlogDTO)
   @UseGuards(GqlAuthGuard)
-  async addBlog(@Args('blog') blog: AddBlog): Promise<AddBlog> {
-    const user = '';
-    const res = await this.blogService.addBlog({...blog, user});
+  async addBlog(@Args('blog') blog: AddBlog, @CurrentUser() user: any): Promise<AddBlog> {
+    const res = await this.blogService.addBlog({...blog, user: user.sub});
     return res;
   }
 
   @Mutation(() => AppResponse)
   @UseGuards(GqlAuthGuard)
-  async updateBlog(@Args('blog') blog: UpdateBlog): Promise<AppResponse> {
+  async updateBlog(@Args('blog') blog: UpdateBlog, @CurrentUser() user: any): Promise<AppResponse> {
     const res = await this.blogService.updateBlog(blog);
     if (res.ok) {
       return {
