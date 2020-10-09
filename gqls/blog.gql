@@ -7,7 +7,15 @@ type AppResponse {
   message: String!
 }
 
-type CommentDTO {
+type PageInfo {
+  length: Float!
+  hasNextPage: Boolean!
+  hasPerviousPage: Boolean!
+  startCursor: String!
+  endCursor: String!
+}
+
+type Comment {
   _id: ID!
   text: String!
   by: String!
@@ -15,25 +23,62 @@ type CommentDTO {
   pinned: Boolean!
 }
 
+type Author {
+  authId: String!
+  name: String!
+  profilePic: String!
+}
+
 type BlogDTO {
   _id: ID!
-  user: String!
+  author: Author!
   title: String!
   subtitle: String!
   published: Boolean!
   sections: String!
-  comments: [CommentDTO!]!
+  comments: [Comment!]!
   createdAt: String!
   updatedAt: String!
 }
 
+type Blog {
+  success: Boolean!
+  message: String!
+  data: BlogDTO
+}
+
+type BlogEdge {
+  node: BlogDTO!
+  cursor: String!
+}
+
+type PaginatedBlog {
+  edges: [BlogEdge!]!
+  pageInfo: PageInfo!
+}
+
+type PaginatedBlogs {
+  success: Boolean!
+  message: String!
+  data: PaginatedBlog
+}
+
 type Query {
-  blogs(before: String!, first: Int!): [BlogDTO!]!
-  blog(id: String!): BlogDTO
+  blogs(filters: GetBlogs!): PaginatedBlogs!
+  blog(id: String!): Blog
+  myBlogs(filters: Int!): [Blog!]!
+  myBlog(id: String!): Blog
+}
+
+input GetBlogs {
+  first: Float!
+  drafts: Boolean!
+  published: Boolean!
+  pageCursor: String!
 }
 
 type Mutation {
-  addBlog(blog: AddBlog!): BlogDTO!
+  addBlog(blog: AddBlog!): Blog!
   updateBlog(blog: UpdateBlog!): AppResponse!
   deleteBlog(blogId: String!): AppResponse!
   comment(blogId: String!, comment: AddComment!): AppResponse!
@@ -44,6 +89,8 @@ type Mutation {
 }
 
 input AddBlog {
+  username: String!
+  profilePicture: String!
   title: String!
   subtitle: String!
   published: Boolean!
@@ -51,6 +98,8 @@ input AddBlog {
 }
 
 input UpdateBlog {
+  username: String
+  profilePicture: String
   title: String
   subtitle: String
   published: Boolean

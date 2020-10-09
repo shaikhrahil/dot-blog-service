@@ -5,7 +5,7 @@ import { Document } from 'mongoose';
   timestamps: true,
   strict: true,
 })
-export class Comment extends Document {
+export class CommentModel extends Document {
   @Prop()
   text: string;
 
@@ -19,4 +19,4 @@ export class Comment extends Document {
   pinned: boolean;
 }
 
-export const CommentSchema = SchemaFactory.createForClass(Comment);
+export const CommentSchema = SchemaFactory.createForClass(CommentModel);
