@@ -30,6 +30,9 @@ export class BlogDTO {
   subtitle: string;
 
   @Field()
+  cover: string;
+
+  @Field()
   published: boolean;
 
   // @Field(() => [Section])
@@ -83,17 +86,17 @@ export class GetBlogs {
   @Field()
   first: number;
 
-  // @Field()
-  // before: string;
+  @Field()
+  pageCursor: string;
+}
 
+@InputType()
+export class GetMyBlogs extends GetBlogs {
   @Field()
   drafts: boolean;
 
   @Field()
   published: boolean;
-
-  @Field()
-  pageCursor: string;
 }
 
 @InputType()
@@ -103,6 +106,9 @@ export class AddBlog {
 
   @Field()
   profilePicture: string;
+
+  @Field()
+  cover: string;
 
   @Field()
   title: string;

@@ -3,7 +3,7 @@ import {Args, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {GqlAuthGuard} from 'src/auth/jwt.strategy';
 import {CurrentUser} from 'src/decorators/current-user.decorator';
 import {AppResponse, PageInfo} from '../dtos/app-response.dto';
-import {AddBlog, Blog, GetBlogs, PaginatedBlogs, UpdateBlog} from '../dtos/blog.dto';
+import {AddBlog, Blog, GetBlogs, GetMyBlogs, PaginatedBlogs, UpdateBlog} from '../dtos/blog.dto';
 import {BlogService} from '../services/blog/blog.service';
 
 @Resolver()
@@ -13,7 +13,7 @@ export class BlogResolver {
   // public
 
   @Query(() => PaginatedBlogs)
-  async blogs(@Args({name: 'filters', type: () => GetBlogs}) filters: GetBlogs): Promise<PaginatedBlogs> {
+  async stories(@Args({name: 'filters', type: () => GetBlogs}) filters: GetBlogs): Promise<PaginatedBlogs> {
     try {
       const blogs = await this.blogService.findStories(filters.first, filters.pageCursor);
       if (blogs && blogs.docs && blogs.docs.length) {
@@ -39,7 +39,7 @@ export class BlogResolver {
   }
 
   @Query(() => Blog, {nullable: true})
-  async blog(@Args({name: 'id', type: () => String}) id: string): Promise<Blog> {
+  async story(@Args({name: 'id', type: () => String}) id: string): Promise<Blog> {
     try {
       const data = await this.blogService.findBlogById(id);
       if (data) {
@@ -75,19 +75,28 @@ export class BlogResolver {
     }
   }
 
-  @Query(() => [Blog])
+  @Query(() => PaginatedBlogs)
   @UseGuards(GqlAuthGuard)
   async myBlogs(
-    @Args({name: 'filters', type: () => Int}) filters: GetBlogs,
+    @Args({name: 'filters', type: () => GetMyBlogs}) filters: GetMyBlogs,
     @CurrentUser() user: string,
   ): Promise<PaginatedBlogs> {
     try {
-      const blogs = await this.blogService.findBlogByUser(user, filters.first, filters.pageCursor);
+      if (!filters.drafts && !filters.published) {
+        return {
+          data: null,
+          success: false,
+          message: 'No blogs found',
+        };
+      }
+      const blogs = await this.blogService.findBlogByUser(user, filters);
       if (blogs && blogs.docs && blogs.docs.length) {
         const pageInfo: PageInfo = {
           length: blogs.limit,
-          endCursor: btoa(new Date(blogs.docs[blogs.docs.length - 1].createdOn).getTime().toString()),
-          startCursor: btoa(new Date(blogs.docs[0].createdOn).getTime().toString()),
+          endCursor: Buffer.from(new Date(blogs.docs[blogs.docs.length - 1].createdOn).getTime().toString()).toString(
+            'base64',
+          ),
+          startCursor: Buffer.from(new Date(blogs.docs[0].createdOn).getTime().toString()).toString('base64'),
           hasNextPage: blogs.hasNextPage,
           hasPerviousPage: blogs.hasPrevPage,
         };

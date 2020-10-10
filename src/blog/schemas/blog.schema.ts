@@ -20,6 +20,9 @@ export class BlogModel extends Document {
   subtitle: string;
 
   @Prop()
+  cover: string;
+
+  @Prop()
   createdOn: string;
 
   @Prop()

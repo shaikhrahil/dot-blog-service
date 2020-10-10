@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {PaginateModel, PaginateResult} from 'mongoose';
-import {BlogDTO, UpdateBlog} from 'src/blog/dtos/blog.dto';
+import {BlogDTO, GetMyBlogs, UpdateBlog} from 'src/blog/dtos/blog.dto';
 import {BlogModel} from 'src/blog/schemas/blog.schema';
 
 @Injectable()
@@ -26,17 +26,20 @@ export class BlogService {
     );
   }
 
-  async findBlogByUser(
-    user: string,
-    first: number,
-    before: string,
-    published = false,
-  ): Promise<PaginateResult<BlogModel>> {
-    return await this.blog.paginate([
-      {$sort: {createdAt: 1}},
-      {$match: {createdAt: {$lt: new Date(parseInt(before))}, user, published}},
-      {$limit: first},
-    ]);
+  async findBlogByUser(user: string, filters: GetMyBlogs): Promise<PaginateResult<BlogModel>> {
+    const {drafts, pageCursor, first, published} = filters;
+    const publishedFilter = published && drafts ? {} : {published};
+    return await this.blog.paginate(
+      {
+        createdAt: {$lt: new Date(parseInt(Buffer.from(pageCursor, 'base64').toString() || Date.now().toString()))},
+        'author.authId': user,
+        ...publishedFilter,
+      },
+      {
+        sort: 'createdAt',
+        limit: first,
+      },
+    );
   }
 
   async findBlogById(_id: string, published = false): Promise<BlogModel> {
