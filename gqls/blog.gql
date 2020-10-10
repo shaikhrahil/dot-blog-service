@@ -1,0 +1,129 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AppResponse {
+  success: Boolean!
+  message: String!
+}
+
+type PageInfo {
+  length: Float!
+  hasNextPage: Boolean!
+  hasPerviousPage: Boolean!
+  startCursor: String!
+  endCursor: String!
+}
+
+type Comment {
+  _id: ID!
+  text: String!
+  by: String!
+  replyTo: String!
+  pinned: Boolean!
+}
+
+type Author {
+  authId: String!
+  name: String!
+  profilePic: String!
+}
+
+type BlogDTO {
+  _id: ID!
+  author: Author!
+  title: String!
+  subtitle: String!
+  cover: String!
+  published: Boolean!
+  sections: String!
+  comments: [Comment!]!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Blog {
+  success: Boolean!
+  message: String!
+  data: BlogDTO
+}
+
+type BlogEdge {
+  node: BlogDTO!
+  cursor: String!
+}
+
+type PaginatedBlog {
+  edges: [BlogEdge!]!
+  pageInfo: PageInfo!
+}
+
+type PaginatedBlogs {
+  success: Boolean!
+  message: String!
+  data: PaginatedBlog
+}
+
+type Query {
+  stories(filters: GetBlogs!): PaginatedBlogs!
+  story(id: String!): Blog
+  myBlogs(filters: GetMyBlogs!): PaginatedBlogs!
+  myBlog(id: String!): Blog
+}
+
+input GetBlogs {
+  first: Float!
+  pageCursor: String!
+}
+
+input GetMyBlogs {
+  first: Float!
+  pageCursor: String!
+  drafts: Boolean!
+  published: Boolean!
+}
+
+type Mutation {
+  addBlog(blog: AddBlog!): Blog!
+  updateBlog(blog: UpdateBlog!): AppResponse!
+  deleteBlog(blogId: String!): AppResponse!
+  comment(blogId: String!, comment: AddComment!): AppResponse!
+  editComment(blogId: String!, comment: UpdateComment!): AppResponse!
+  deleteComment(blogId: String!, commentId: String!): AppResponse!
+}
+
+input AddBlog {
+  username: String!
+  profilePicture: String!
+  cover: String!
+  title: String!
+  subtitle: String!
+  published: Boolean!
+  sections: String!
+}
+
+input UpdateBlog {
+  username: String
+  profilePicture: String
+  cover: String
+  title: String
+  subtitle: String
+  published: Boolean
+  sections: String
+  _id: ID!
+}
+
+input AddComment {
+  text: String!
+  by: String!
+  replyTo: String!
+  pinned: Boolean!
+}
+
+input UpdateComment {
+  text: String
+  by: String
+  replyTo: String
+  pinned: Boolean
+  _id: String!
+}
