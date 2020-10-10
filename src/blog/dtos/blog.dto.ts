@@ -1,6 +1,19 @@
 import {Field, ID, InputType, ObjectType, PartialType} from '@nestjs/graphql';
-import {CommentDTO} from './comment.dto';
-import {Section, SectionArgs} from './section.dto';
+import {AppResponse, PageInfo} from './app-response.dto';
+import {Comment} from './comment.dto';
+// import {Section, SectionArgs} from './section.dto';
+
+@ObjectType()
+export class Author {
+  @Field()
+  authId: string;
+
+  @Field()
+  name: string;
+
+  @Field()
+  profilePic: string;
+}
 
 @ObjectType()
 export class BlogDTO {
@@ -8,13 +21,16 @@ export class BlogDTO {
   _id?: string;
 
   @Field()
-  user: string;
+  author: Author;
 
   @Field()
   title: string;
 
   @Field()
   subtitle: string;
+
+  @Field()
+  cover: string;
 
   @Field()
   published: boolean;
@@ -25,8 +41,8 @@ export class BlogDTO {
   @Field()
   sections: string;
 
-  @Field(() => [CommentDTO])
-  comments?: CommentDTO[];
+  @Field(() => [Comment])
+  comments?: Comment[];
 
   @Field()
   createdAt?: string;
@@ -35,8 +51,65 @@ export class BlogDTO {
   updatedAt?: string;
 }
 
+@ObjectType()
+export class Blog extends AppResponse {
+  @Field(() => BlogDTO, {nullable: true})
+  data: BlogDTO | null;
+}
+
+@ObjectType()
+export class BlogEdge {
+  @Field(() => BlogDTO)
+  node: BlogDTO;
+
+  @Field()
+  cursor: String;
+}
+
+@ObjectType()
+export class PaginatedBlog {
+  @Field(() => [BlogEdge])
+  edges: BlogEdge[];
+
+  @Field(() => PageInfo)
+  pageInfo: PageInfo;
+}
+
+@ObjectType()
+export class PaginatedBlogs extends AppResponse {
+  @Field(() => PaginatedBlog, {nullable: true})
+  data: PaginatedBlog | null;
+}
+
+@InputType()
+export class GetBlogs {
+  @Field()
+  first: number;
+
+  @Field()
+  pageCursor: string;
+}
+
+@InputType()
+export class GetMyBlogs extends GetBlogs {
+  @Field()
+  drafts: boolean;
+
+  @Field()
+  published: boolean;
+}
+
 @InputType()
 export class AddBlog {
+  @Field()
+  username: string;
+
+  @Field()
+  profilePicture: string;
+
+  @Field()
+  cover: string;
+
   @Field()
   title: string;
 

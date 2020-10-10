@@ -1,21 +1,26 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Document} from 'mongoose';
-import {Comment} from './comment.schema';
-import {Section} from './section.schema';
+// import {Section} from './section.schema';
+import * as mongoosePaginate from 'mongoose-paginate-v2';
+import {AuthorModel} from './author.schema';
+import {CommentModel} from './comment.schema';
 
 @Schema({
   timestamps: true,
   strict: true,
 })
-export class Blog extends Document {
+export class BlogModel extends Document {
   @Prop()
-  user: string;
+  author: AuthorModel;
 
   @Prop()
   title: string;
 
   @Prop()
   subtitle: string;
+
+  @Prop()
+  cover: string;
 
   @Prop()
   createdOn: string;
@@ -30,7 +35,7 @@ export class Blog extends Document {
   sections: string;
 
   @Prop({default: []})
-  comments: Comment[];
+  comments: CommentModel[];
 }
 
-export const BlogSchema = SchemaFactory.createForClass(Blog);
+export const BlogSchema = SchemaFactory.createForClass(BlogModel).plugin(mongoosePaginate);

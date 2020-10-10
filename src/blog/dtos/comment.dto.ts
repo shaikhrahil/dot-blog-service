@@ -1,7 +1,7 @@
 import { Field, InputType, ObjectType, PartialType, ID } from '@nestjs/graphql';
 
 @ObjectType()
-export class CommentDTO {
+export class Comment {
   @Field(() => ID)
   _id?: string;
 
