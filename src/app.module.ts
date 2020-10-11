@@ -4,6 +4,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { BlogModule } from './blog/blog.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { BlogModule } from './blog/blog.module';
       context: ({ req }) => ({ req }),
     }),
     AuthModule,
+    CommonModule,
   ],
   controllers: [],
   providers: [],

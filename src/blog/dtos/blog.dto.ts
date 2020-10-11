@@ -29,7 +29,7 @@ export class BlogDTO {
   @Field()
   subtitle: string;
 
-  @Field()
+  @Field({nullable: true})
   cover: string;
 
   @Field()
