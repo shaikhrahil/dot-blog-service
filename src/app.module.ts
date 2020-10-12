@@ -18,6 +18,9 @@ import { CommonModule } from './common/common.module';
       autoSchemaFile: 'gqls/blog.gql',
       include: [BlogModule],
       path: '/blog',
+      playground : {
+        title : 'Dot Blog Service',
+      },
       context: ({ req }) => ({ req }),
     }),
     AuthModule,
