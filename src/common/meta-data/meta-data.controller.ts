@@ -22,7 +22,7 @@ export class MetaDataController {
           title: res.title,
           description: res.description,
           image: {
-            url: 'https://' + res.source + res.image,
+            url: res.image,
           },
         },
       }

@@ -13,30 +13,32 @@ export class BlogService {
     return await newBlog.save()
   }
 
-  async findStories(first: number, pageCursor: string): Promise<PaginateResult<BlogModel>> {
+  async findStories(first: number, pageCursor: string): Promise<PaginateResult<BlogDTO>> {
+    const createdAt = Buffer.from(pageCursor, 'base64').toString()
     return await this.blog.paginate(
       {
-        createdAt: {$lt: new Date(parseInt(Buffer.from(pageCursor, 'base64').toString() || Date.now().toString()))},
+        createdAt: {$lt: createdAt || Date.now().toString()},
         published: true,
       },
       {
-        sort: 'createdAt',
+        sort: '-createdAt',
         limit: first,
       },
     )
   }
 
-  async findBlogByUser(user: string, filters: GetMyBlogs): Promise<PaginateResult<BlogModel>> {
+  async findBlogByUser(user: string, filters: GetMyBlogs): Promise<PaginateResult<BlogDTO>> {
     const {drafts, pageCursor, first, published} = filters
+    const createdAt = Buffer.from(pageCursor, 'base64').toString()
     const publishedFilter = published && drafts ? {} : {published}
     return await this.blog.paginate(
       {
-        createdAt: {$lt: new Date(parseInt(Buffer.from(pageCursor, 'base64').toString() || Date.now().toString()))},
+        createdAt: {$lt: createdAt || Date.now().toString()},
         'author.authId': user,
         ...publishedFilter,
       },
       {
-        sort: 'createdAt',
+        sort: '-createdAt',
         limit: first,
       },
     )

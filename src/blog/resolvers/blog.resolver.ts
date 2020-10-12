@@ -17,17 +17,24 @@ export class BlogResolver {
     try {
       const blogs = await this.blogService.findStories(filters.first, filters.pageCursor)
       if (blogs && blogs.docs && blogs.docs.length) {
+        const lastRecord = blogs.docs[blogs.docs.length - 1]
+        const lastDate = lastRecord.createdAt
+        const endCursor = Buffer.from(lastDate).toString('base64')
         const pageInfo: PageInfo = {
           length: blogs.limit,
-          endCursor: Buffer.from(new Date(blogs.docs[blogs.docs.length - 1].createdOn).getTime().toString()).toString(
-            'base64',
-          ),
-          startCursor: Buffer.from(new Date(blogs.docs[0].createdOn).getTime().toString()).toString('base64'),
+          endCursor: Buffer.from(blogs.docs[blogs.docs.length - 1].createdAt).toString('base64'),
+          startCursor: Buffer.from(blogs.docs[0].createdAt).toString('base64'),
           hasNextPage: blogs.hasNextPage,
           hasPerviousPage: blogs.hasPrevPage,
         }
         return {
-          data: {edges: blogs.docs.map(node => ({node, cursor: node.id})), pageInfo},
+          data: {
+            edges: blogs.docs.map(node => ({
+              node,
+              cursor: Buffer.from(node.createdAt).toString('base64'),
+            })),
+            pageInfo,
+          },
           success: true,
           message: 'Blogs found successfully',
         }
@@ -93,15 +100,15 @@ export class BlogResolver {
       if (blogs && blogs.docs && blogs.docs.length) {
         const pageInfo: PageInfo = {
           length: blogs.limit,
-          endCursor: Buffer.from(new Date(blogs.docs[blogs.docs.length - 1].createdOn).getTime().toString()).toString(
+          endCursor: Buffer.from(new Date(blogs.docs[blogs.docs.length - 1].createdAt).getTime().toString()).toString(
             'base64',
           ),
-          startCursor: Buffer.from(new Date(blogs.docs[0].createdOn).getTime().toString()).toString('base64'),
+          startCursor: Buffer.from(new Date(blogs.docs[0].createdAt).getTime().toString()).toString('base64'),
           hasNextPage: blogs.hasNextPage,
           hasPerviousPage: blogs.hasPrevPage,
         }
         return {
-          data: {edges: blogs.docs.map(node => ({node, cursor: node.id})), pageInfo},
+          data: {edges: blogs.docs.map(node => ({node, cursor: node._id})), pageInfo},
           success: true,
           message: 'Blogs found successfully',
         }
