@@ -1,9 +1,9 @@
-import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
-import {Document} from 'mongoose';
+import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose'
+import {Document} from 'mongoose'
 // import {Section} from './section.schema';
-import * as mongoosePaginate from 'mongoose-paginate-v2';
-import {AuthorModel} from './author.schema';
-import {CommentModel} from './comment.schema';
+import * as mongoosePaginate from 'mongoose-paginate-v2'
+import {AuthorModel} from './author.schema'
+import {CommentModel} from './comment.schema'
 
 @Schema({
   timestamps: true,
@@ -11,31 +11,28 @@ import {CommentModel} from './comment.schema';
 })
 export class BlogModel extends Document {
   @Prop()
-  author: AuthorModel;
+  author: AuthorModel
 
   @Prop()
-  title: string;
+  title: string
 
   @Prop()
-  subtitle: string;
+  subtitle: string
 
   @Prop()
-  cover: string;
+  cover: string
 
   @Prop()
-  createdOn: string;
-
-  @Prop()
-  published: boolean;
+  published: boolean
 
   // @Prop([Section])
   // sections: Section[];
 
   @Prop()
-  sections: string;
+  sections: string
 
   @Prop({default: []})
-  comments: CommentModel[];
+  comments: CommentModel[]
 }
 
-export const BlogSchema = SchemaFactory.createForClass(BlogModel).plugin(mongoosePaginate);
+export const BlogSchema = SchemaFactory.createForClass(BlogModel).plugin(mongoosePaginate)
