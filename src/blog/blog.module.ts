@@ -1,14 +1,16 @@
-import {Module} from '@nestjs/common';
-import {MongooseModule} from '@nestjs/mongoose';
+import {Module} from '@nestjs/common'
+import {MongooseModule} from '@nestjs/mongoose'
 // import {LikeService} from 'src/blog/services/like/like.service';
-import {BlogResolver} from './resolvers/blog.resolver';
-import {CommentResolver} from './resolvers/comment.resolver';
+import {BlogResolver} from './resolvers/blog.resolver'
+import {CommentResolver} from './resolvers/comment.resolver'
 // import {LikeResolver} from './resolvers/like.resolver';
-import {BlogModel, BlogSchema} from './schemas/blog.schema';
-import {CommentModel, CommentSchema} from './schemas/comment.schema';
+import {BlogModel, BlogSchema} from './schemas/blog.schema'
+import {CommentModel, CommentSchema} from './schemas/comment.schema'
 // import {Like, LikeSchema} from './schemas/like.schema';
-import {BlogService} from './services/blog/blog.service';
-import {CommentService} from './services/comment/comment.service';
+import {BlogService} from './services/blog/blog.service'
+import {CappingService} from './services/capping/capping.service'
+import {CloudinaryService} from './services/cloudinary/cloudinary.service'
+import {CommentService} from './services/comment/comment.service'
 
 // {name: Like.name, schema: LikeSchema},
 // LikeService, LikeResolver,
@@ -19,6 +21,6 @@ import {CommentService} from './services/comment/comment.service';
       {name: CommentModel.name, schema: CommentSchema},
     ]),
   ],
-  providers: [BlogService, BlogResolver, CommentService, CommentResolver],
+  providers: [BlogService, BlogResolver, CommentService, CommentResolver, CappingService, CloudinaryService],
 })
 export class BlogModule {}

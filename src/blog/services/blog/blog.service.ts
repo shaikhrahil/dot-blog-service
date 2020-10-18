@@ -1,8 +1,8 @@
 import {Injectable} from '@nestjs/common'
 import {InjectModel} from '@nestjs/mongoose'
 import {PaginateModel, PaginateResult} from 'mongoose'
-import {BlogDTO, GetMyBlogs, UpdateBlog} from 'src/blog/dtos/blog.dto'
-import {BlogModel} from 'src/blog/schemas/blog.schema'
+import {BlogDTO, GetMyBlogs, UpdateBlog} from 'blog/dtos/blog.dto'
+import {BlogModel} from 'blog/schemas/blog.schema'
 
 @Injectable()
 export class BlogService {

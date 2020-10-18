@@ -1,14 +1,21 @@
 import {UseGuards} from '@nestjs/common'
 import {Args, Mutation, Query, Resolver} from '@nestjs/graphql'
-import {GqlAuthGuard} from 'src/auth/jwt.strategy'
-import {CurrentUser} from 'src/decorators/current-user.decorator'
+import {GqlAuthGuard} from 'auth/jwt.strategy'
+import {Section} from 'blog/dtos/section.dto'
+import {CappingService} from 'blog/services/capping/capping.service'
+import {CloudinaryService} from 'blog/services/cloudinary/cloudinary.service'
+import {CurrentUser} from 'decorators/current-user.decorator'
 import {PageInfo} from '../dtos/app-response.dto'
 import {AddBlog, Blog, GetBlogs, GetMyBlogs, PaginatedBlogs, UpdateBlog} from '../dtos/blog.dto'
 import {BlogService} from '../services/blog/blog.service'
 
 @Resolver()
 export class BlogResolver {
-  constructor(private blogService: BlogService) {}
+  constructor(
+    private blogService: BlogService,
+    private cappingService: CappingService,
+    private cloudinaryService: CloudinaryService,
+  ) {}
 
   // public
 
@@ -64,8 +71,19 @@ export class BlogResolver {
   @UseGuards(GqlAuthGuard)
   async addBlog(@Args('blog') blog: AddBlog, @CurrentUser() authId: string): Promise<Blog> {
     try {
+      const res = await this.cappingService.blogLimitsReached(authId)
+      const [{noOfBlogs}] = res.length ? res : [{noOfBlogs: 0}]
+      if (noOfBlogs >= this.cappingService.maxBlogs) {
+        return {
+          data: null,
+          message: `You have already published ${this.cappingService.maxBlogs} blogs`,
+          success: false,
+        }
+      }
+      const updatedSections = await this.processBlog(blog.sections)
       const data = await this.blogService.addBlog({
         ...blog,
+        sections: JSON.stringify(updatedSections),
         author: {
           authId,
           name: blog.username,
@@ -80,6 +98,31 @@ export class BlogResolver {
     } catch (e) {
       return {data: null, message: e, success: false}
     }
+  }
+
+  isDataURL(s: string) {
+    return !!s.match(this.base64Re)
+  }
+
+  //eslint-disable-next-line
+  base64Re = /^\s*data:([a-z]+\/[a-z]+(;[a-z\-]+\=[a-z\-]+)?)?(;base64)?,[a-z0-9\!\$\&\'\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*\s*$/i
+
+  async processBlog(sections: string) {
+    const blocks = JSON.parse(sections)
+    const updatedSections = await Promise.all(
+      blocks.map(async b => {
+        if (b.type === 'image' && !b.data.unsplash && this.isDataURL(b.data.url)) {
+          const res = await this.cloudinaryService.upload(b.data.url)
+          b.data = {
+            ...b.data,
+            url: res.secure_url,
+            uploaded: true,
+          }
+        }
+        return b
+      }),
+    )
+    return updatedSections
   }
 
   @Query(() => PaginatedBlogs)

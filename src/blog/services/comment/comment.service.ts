@@ -1,9 +1,9 @@
 import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model, Types} from 'mongoose';
-import {AddComment, UpdateComment} from 'src/blog/dtos/comment.dto';
-import {BlogModel} from 'src/blog/schemas/blog.schema';
-import {CommentModel} from 'src/blog/schemas/comment.schema';
+import {AddComment, UpdateComment} from 'blog/dtos/comment.dto';
+import {BlogModel} from 'blog/schemas/blog.schema';
+import {CommentModel} from 'blog/schemas/comment.schema';
 
 @Injectable()
 export class CommentService {

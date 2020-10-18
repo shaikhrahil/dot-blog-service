@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
-import {Like} from 'src/blog/schemas/like.schema';
+import {Like} from 'blog/schemas/like.schema';
 
 @Injectable()
 export class LikeService {

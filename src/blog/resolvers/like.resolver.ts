@@ -1,5 +1,5 @@
 import { Resolver, Args, Mutation } from '@nestjs/graphql';
-import { LikeService } from 'src/blog/services/like/like.service';
+import { LikeService } from 'blog/services/like/like.service';
 import { AppResponse } from '../dtos/app-response.dto';
 
 @Resolver()
